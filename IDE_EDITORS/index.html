@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>IDE y Editores de Código Abierto para Debian 12 (Modo Offline)</title>
+<meta charset="UTF-8">
+<style>
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; margin: 30px; background-color: #f8f9fa; color: #333; }
+  h1 { color: #004d99; border-bottom: 3px solid #004d99; padding-bottom: 10px; margin-bottom: 25px; }
+  h2 { color: #cc5200; margin-top: 30px; }
+  h3 { color: #34495e; margin-top: 15px; }
+  pre { background-color: #ecf0f1; border: 1px solid #c0d1d7; padding: 15px; border-radius: 5px; overflow-x: auto; font-family: 'Consolas', 'Courier New', monospace; }
+  .entry { margin-bottom: 40px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #fff; }
+  .content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+  .image-content img { width: 100%; height: auto; display: block; border-radius: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+  @media (max-width: 800px) {
+    .content-grid { grid-template-columns: 1fr; }
+  }
+  .category-title { font-size: 1.5em; color: #004d99; margin-top: 40px; border-bottom: 2px solid #e0e0e0; padding-bottom: 5px; }
+  hr { border: 0; height: 1px; background-color: #ccc; margin: 30px 0; }
+</style>
+</head>
+<body>
+
+<h1>Entornos de Programación de Código Abierto para Debian 12 (Offline)</h1>
+
+<p>Esta documentación lista los mejores IDEs y Editores de Código Abierto para Debian 12 (Bookworm). Son esenciales para trabajar con los scripts de Channel-9, el código C/C++ de Whisper.cpp, y los módulos de Proxmox.</p>
+<p><strong>Nota sobre imágenes:</strong> Los enlaces de las imágenes deben ser actualizados por el operador (carpeta <code>img/</code>) y las rutas de los archivos .deb asumen que se encuentran junto a este archivo <code>index.html</code>.</p>
+
+<h2 class="category-title">I. Editores de Texto (Ligeros y Versátiles)</h2>
+
+        <div class="entry">
+            <h2><a id="vscodium">VSCodium</a></h2>
+            <div class="content-grid">
+                <div class="text-content">
+                    <p>La versión de Código Abierto de Visual Studio Code (VS Code), sin telemetría. Ofrece la misma interfaz, extensiones y potencia. Ideal para editar scripts de Bash, archivos de configuración y gestionar repositorios Git.</p>
+                    <h3>Instalación en Debian 12 (Offline)</h3>
+                    
+<p>Al ser externo a Debian, debe ser instalado manualmente con <code>dpkg</code>:</p>
+<pre>
+# 1. Instalar la versión AMD64 o ARM64
+sudo dpkg -i codium_1.107.18605_amd64.deb
+# O para Raspberry Pi/ARM64:
+sudo dpkg -i codium_1.107.18605_arm64.deb
+
+# 2. Solucionar dependencias faltantes (usando el mirror local APT configurado)
+sudo apt --fix-broken install
+</pre>
+                    
+<h3>Archivos Locales</h3>
+<p>Archivos binarios y código fuente guardados localmente:</p>
+<ul>
+    <li>Binario AMD64: <a href="VSCODIUM/codium_1.107.18605_amd64.deb">codium_1.107.18605_amd64.deb</a></li>
+    <li>Binario ARM64: <a href="VSCODIUM/codium_1.107.18605_arm64.deb">codium_1.107.18605_arm64.deb</a></li>
+    <li>Código Fuente: <a href="VSCODIUM/vscodium.git.tgz">vscodium.git.tgz</a></li>
+    <li>Extensiones: <a href="VSCODIUM/vscodium_vsix_mirror.tar.gz">vscodium_vsix_mirror.tar.gz</a></li>
+</ul>
+
+<h3>Extensiones Offline (Instalación por VSIX)</h3>
+<h4>...mientras internet sea disponible...</h4>
+<p>Para evitar problemas con las rutas absolutas, la estrategia es descargar los paquetes <strong>.vsix</strong> (el formato nativo de extensión) y distribuirlos. Estos archivos se encuentran en el directorio <code>vscodium_vsix_mirror/</code> del mirror.</p>
+
+<h4>1. Preparación (En la máquina con Internet):</h4>
+<p>Ejecute el script <code>download_vsix_extensions.sh</code> que se encuentra en la carpeta de herramientas. Este script generará y comprimirá los paquetes VSIX en un directorio listo para copiar al mirror.</p>
+<pre>
+./download_vsix_extensions.sh
+# El script crea el archivo 'vscodium_vsix_mirror.tar.gz'
+</pre>
+
+<h4>2. Instalación Offline (En la máquina de destino):</h4>
+<p>Después de instalar VSCodium, el operador debe descomprimir los archivos y usar la línea de comandos de <code>codium</code> para instalarlos uno por uno. Esto registra correctamente las extensiones en el entorno del operador sin necesidad de conexión.</p>
+<pre>
+# Descomprimir los archivos VSIX en el disco local
+tar -xzvf /ruta/del/mirror/vscodium_vsix_mirror.tar.gz
+
+# Iterar e instalar todas las extensiones (ejemplo de script de instalación rápido)
+cd vscodium_vsix_mirror
+for VSIX_FILE in *.vsix; do
+    codium --install-extension ${VSIX_FILE}
+done
+</pre>
+<p><strong>Nota:</strong> Este proceso puede tomar varios minutos, dependiendo de la cantidad de extensiones.</p>
+
+                </div>
+                <div class="image-content">
+                    <a href="img/vscodium.png"><img src="img/vscodium.png" alt="Captura de VSCodium" width="640" height="360"></a>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="entry">
+            <h2><a id="geany">Geany</a></h2>
+            <div class="content-grid">
+                <div class="text-content">
+                    <p>Un IDE/Editor muy ligero, rápido y estable. Perfecto para máquinas con recursos limitados. Soporta resaltado de sintaxis, autocompletado básico y tiene un terminal integrado.</p>
+                    <h3>Instalación en Debian 12 (Offline)</h3>
+                    
+<p>Disponible directamente en el Mirror Local de Debian:</p>
+<pre>sudo apt install geany</pre>
+                    
+<p>El código fuente y binarios están incluidos en el Mirror APT (bookworm, security, updates, backports).</p>
+                </div>
+                <div class="image-content">
+                    <a href="img/geany.png"><img src="img/geany.png" alt="Captura de Geany" width="640" height="360"></a>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="entry">
+            <h2><a id="neovim/vim">Neovim / Vim</a></h2>
+            <div class="content-grid">
+                <div class="text-content">
+                    <p>Editores clásicos de terminal. Extremadamente potentes y omnipresentes. Indispensables para tareas de administración remota o en terminal puro. Neovim es la versión moderna.</p>
+                    <h3>Instalación en Debian 12 (Offline)</h3>
+                    
+<p>Disponible directamente en el Mirror Local de Debian:</p>
+<pre>sudo apt install neovim vim</pre>
+                    
+<p>El código fuente y binarios están incluidos en el Mirror APT (bookworm, security, updates, backports).</p>
+                </div>
+                <div class="image-content">
+                    <a href="img/neovim.png"><img src="img/neovim.png" alt="Captura de Neovim / Vim" width="640" height="360"></a>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="entry">
+            <h2><a id="emacs">Emacs</a></h2>
+            <div class="content-grid">
+                <div class="text-content">
+                    <p>Un entorno de desarrollo completo. Ofrece una funcionalidad inmensa, desde la edición de código avanzada hasta la gestión de documentación. Altamente productivo.</p>
+                    <h3>Instalación en Debian 12 (Offline)</h3>
+                    
+<p>Disponible directamente en el Mirror Local de Debian:</p>
+<pre>sudo apt install emacs</pre>
+                    
+<p>El código fuente y binarios están incluidos en el Mirror APT (bookworm, security, updates, backports).</p>
+                </div>
+                <div class="image-content">
+                    <a href="img/emacs.png"><img src="img/emacs.png" alt="Captura de Emacs" width="640" height="360"></a>
+                </div>
+            </div>
+        </div>
+        <hr>
+<h2 class="category-title">II. IDEs (Entornos de Desarrollo Integrado)</h2>
+
+        <div class="entry">
+            <h2><a id="qtcreator">Qt Creator</a></h2>
+            <div class="content-grid">
+                <div class="text-content">
+                    <p>Un IDE excepcional para C/C++. Es la herramienta recomendada para trabajar con el código de <code>whisper.cpp</code>. Ofrece un depurador avanzado, integración con CMake/Makefiles y excelente gestión de proyectos.</p>
+                    <h3>Instalación en Debian 12 (Offline)</h3>
+                    
+<p>Disponible directamente en el Mirror Local de Debian:</p>
+<pre>sudo apt install qtcreator</pre>
+                    
+<p>El código fuente y binarios están incluidos en el Mirror APT (bookworm, security, updates, backports).</p>
+                </div>
+                <div class="image-content">
+                    <a href="img/qtcreator.png"><img src="img/qtcreator.png" alt="Captura de Qt Creator" width="640" height="360"></a>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="entry">
+            <h2><a id="eclipseide">Eclipse IDE</a></h2>
+            <div class="content-grid">
+                <div class="text-content">
+                    <p>Un IDE maduro y modular. Con paquetes específicos (como CDT para C/C++) ofrece todas las herramientas de depuración y refactorización para proyectos a gran escala.</p>
+                    <h3>Instalación en Debian 12 (Offline)</h3>
+                    
+<p>Disponible directamente en el Mirror Local de Debian:</p>
+<pre>sudo apt install eclipse</pre>
+                    
+<p>El código fuente y binarios están incluidos en el Mirror APT (bookworm, security, updates, backports).</p>
+                </div>
+                <div class="image-content">
+                    <a href="img/eclipse.png"><img src="img/eclipse.png" alt="Captura de Eclipse IDE" width="640" height="360"></a>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="entry">
+            <h2><a id="code::blocks">Code::Blocks</a></h2>
+            <div class="content-grid">
+                <div class="text-content">
+                    <p>Un IDE C/C++ más ligero que Eclipse. Rápido y fácil de usar, ideal para proyectos basados en el compilador GCC/G++. Alternativa simple y robusta.</p>
+                    <h3>Instalación en Debian 12 (Offline)</h3>
+                    
+<p>Disponible directamente en el Mirror Local de Debian:</p>
+<pre>sudo apt install codeblocks</pre>
+                    
+<p>El código fuente y binarios están incluidos en el Mirror APT (bookworm, security, updates, backports).</p>
+                </div>
+                <div class="image-content">
+                    <a href="img/codeblocks.png"><img src="img/codeblocks.png" alt="Captura de Code::Blocks" width="640" height="360"></a>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="entry">
+            <h2><a id="spyder">Spyder</a></h2>
+            <div class="content-grid">
+                <div class="text-content">
+                    <p>El IDE *open-source* ideal para desarrollo en Python. Ofrece una consola interactiva, visor de variables y todas las herramientas de un entorno científico.</p>
+                    <h3>Instalación en Debian 12 (Offline)</h3>
+                    
+<p>Disponible directamente en el Mirror Local de Debian:</p>
+<pre>sudo apt install spyder</pre>
+                    
+<p>El código fuente y binarios están incluidos en el Mirror APT (bookworm, security, updates, backports).</p>
+                </div>
+                <div class="image-content">
+                    <a href="img/spyder.png"><img src="img/spyder.png" alt="Captura de Spyder" width="640" height="360"></a>
+                </div>
+            </div>
+        </div>
+        <hr></body>
+</html>
