@@ -1,0 +1,5 @@
+# Archivos Debian
+*.deb
+
+# Archivos Tar GZ
+*.tgz
